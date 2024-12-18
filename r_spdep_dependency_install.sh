@@ -1,0 +1,91 @@
+#!/bin/bash
+# Script to install udunits2 2.1.19, gdal 2.1.0, geos 3.6.2, proj 4.8.0 with nad and epsg
+# Written by Ghanghoon "Will" Paik (gip5038@psu.edu)
+# June 25 2019
+# Updated: Oct 22 2019
+# NOTE: Submit it as a job is recommended (takes long time to build ~2 hrs)
+
+if [[ ! -z "$PBS_NODEFILE" ]]; then
+	NP=$(wc -l $PBS_NODEFILE | awk '{print $1}')
+else
+	NP=1;
+fi
+
+
+cd ~/scratch
+mkdir tmp_lib
+cd tmp_lib
+TMPDIR=~/scratch/tmp_lib
+
+module load gcc/5.3.1
+
+# "units" requires udunits2-devel
+wget http://download-ib01.fedoraproject.org/pub/epel/6/x86_64/Packages/u/udunits2-2.1.19-1.el6.x86_64.rpm
+wget http://download-ib01.fedoraproject.org/pub/epel/6/x86_64/Packages/u/udunits2-devel-2.1.19-1.el6.x86_64.rpm
+
+rpm2cpio udunits2-2.1.19-1.el6.x86_64.rpm | cpio -idmv
+rpm2cpio udunits2-devel-2.1.19-1.el6.x86_64.rpm | cpio -idmv
+
+wget http://elgis.argeo.org/repos/6/elgis/x86_64//proj-4.8.0-3.el6.x86_64.rpm
+wget http://elgis.argeo.org/repos/6/elgis/x86_64//proj-devel-4.8.0-3.el6.x86_64.rpm
+wget http://elgis.argeo.org/repos/6/elgis/x86_64//proj-epsg-4.8.0-3.el6.x86_64.rpm
+wget http://elgis.argeo.org/repos/6/elgis/x86_64//proj-nad-4.8.0-3.el6.x86_64.rpm
+
+rpm2cpio proj-4.8.0-3.el6.x86_64.rpm | cpio -idmv
+rpm2cpio proj-devel-4.8.0-3.el6.x86_64.rpm | cpio -idmv
+rpm2cpio proj-epsg-4.8.0-3.el6.x86_64.rpm | cpio -idmv
+rpm2cpio proj-nad-4.8.0-3.el6.x86_64.rpm | cpio -idmv
+
+cd $TMPDIR
+
+mv usr ~/spdep_dep
+BUILD_DIR=~/spdep_dep
+
+# "sf" requires GDAL >= 2.0.1, GEOS 3.6.2, PROJ >= 4.8, PROJ-NAD, and PROJ-EPSG
+# Install GDAL
+wget https://github.com/OSGeo/gdal/archive/v2.1.0.tar.gz
+tar -xf v2.1.0.tar.gz
+cd gdal-2.1.0/gdal
+./configure --prefix=$BUILD_DIR
+make -j $NP && make install
+
+cd $TMPDIR
+
+# Install GEOS
+wget http://download.osgeo.org/geos/geos-3.6.2.tar.bz2
+tar -xf geos-3.6.2.tar.bz2
+cd geos-3.6.2
+./configure --prefix=$BUILD_DIR
+make -j $NP && make install
+
+cd $TMPDIR
+
+#### Install curl 7.64.1
+wget https://curl.haxx.se/download/curl-7.64.1.tar.gz
+tar -xf curl-7.64.1.tar.gz
+cd curl-7.64.1
+./configure --prefix=$BUILD_DIR
+make && make install
+
+
+cd ~/scratch
+rm -rf tmp_lib
+
+echo "export PATH=$PATH:$HOME/spdep_dep/bin" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/spdep_dep/lib:$HOME/spdep_dep/lib64:/usr/lib64" >> ~/.bashrc
+echo "export CPATH=$CPATH:$HOME/spdep_dep/include" >> ~/.bashrc
+
+
+#install.packages("units", configure.args = "--with-udunits2-lib=$HOME/spdep_dep/lib64")
+#install.packages("sf", configure.args = "--with-gdal-config=$HOME/spdep_dep/bin/gdal-config --with-gdal-lib=$HOME/spdep_dep/lib --with-proj-lib=$HOME/spdep_dep/lib64 --with-proj-include=$HOME/spdep_dep/include --with-proj-share=$HOME/spdep_dep/share/proj --with-geos-config=$HOME/spdep_dep/bin/geos-config")
+#install.packages("spdep")
+
+# RGDAL
+#install.packages("rgdal", configure.args = "--with-gdal-config=$HOME/spdep_dep/bin/gdal-config --with-proj-lib=$HOME/spdep_dep/lib64 --with-proj-include=$HOME/spdep_dep/include --with-proj-share=$HOME/spdep_dep/share/proj --with-proj_api=$HOME/spdep_dep/include/proj_api.h LDFLAGS='-L$HOME/spdep_dep/lib -L$HOME/spdep_dep/lib64' CPPFLAGS=-I$HOME/spdep_dep/include LIBS='-L$HOME/spdep_dep/lib -L$HOME/spdep_dep/lib64' INCLUDE_DIR=-I$HOME/spdep_dep/include")
+#OR:
+#./configure --with-gdal-config=$HOME/spdep_dep/bin/gdal-config --with-proj-lib=$HOME/spdep_dep/lib64 --with-proj-include=$HOME/spdep_dep/include --with-proj-share=$HOME/spdep_dep/share/proj --with-proj_api=$HOME/spdep_dep/include/proj_api.h LDFLAGS="-L$HOME/spdep_dep/lib -L$HOME/spdep_dep/lib64" CPPFLAGS=-I$HOME/spdep_dep/include LIBS="-L$HOME/spdep_dep/lib -L$HOME/spdep_dep/lib64" INCLUDE_DIR=-I$HOME/spdep_dep/include
+
+
+
+
+#install.packages("sf", configure.args = "--with-gdal-config=/gpfs/scratch/gip5038/test/r/usr/bin/gdal-config --with-gdal-lib=/gpfs/scratch/gip5038/test/r/usr/lib --with-proj-lib=/gpfs/scratch/gip5038/test/r/usr/lib64 --with-proj-include=/gpfs/scratch/gip5038/test/r/usr/include --with-proj-share=/gpfs/scratch/gip5038/test/r/usr/share/proj --with-geos-config=/gpfs/scratch/gip5038/test/r/usr/bin/geos-config")

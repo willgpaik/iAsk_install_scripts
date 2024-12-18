@@ -1,0 +1,24 @@
+#!/bin/bash
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=2:00
+#PBS -l pmem=1gb
+#PBS -A open
+
+# Get started
+cd $PBS_O_WORKDIR
+sleep 10
+
+
+# Generate binary choice, that is, "true" or "false" value.
+BINARY=2
+T=1
+number=$RANDOM
+
+let "number %= $BINARY"
+if [ "$number" -eq $T ];
+then
+  echo "True" > outfile
+else
+  echo "False" > outfile
+fi
+

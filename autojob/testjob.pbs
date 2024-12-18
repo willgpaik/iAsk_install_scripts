@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=2:00
+#PBS -l pmem=1gb
+#PBS -A open
+
+# Get started
+cd $PBS_O_WORKDIR
+sleep 10
+
+echo "my job number is:"${JOBCOUNT}

@@ -1,0 +1,9 @@
+#PBS -A open
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=5:00
+
+module load python
+
+cd $PBS_O_WORKDIR
+
+python test.py INPUT >> INPUT.out

@@ -1,0 +1,55 @@
+Instruction updated 10/10/2022
+Created by Ghanghoon "Will" Paik (gip5038@psu.edu)
+Roar Collab version (slurm)
+
+# NOTE: While job is running, MATLAB must be opened for whole time. So, please make sure to leave terminal or interactive desktop/app session alive.
+# Note: Based on the version of MATLAB, some functions/commands are subject to change
+
+STEP 1: Creating Profile
+	Need to create a cluster profile through MATLAB GUI (either interactive desktop or app)
+
+	Creating Slurm profile from "Create and Manage Clusters"
+	- MATLAB -> Home tab -> Environment -> Parallel -> Create and Manage Clusters
+	- Press "Add Cluster Profile" ("+" mark) -> Slurm
+
+	# Note: Name of the profile can be changed from the Cluster Profile box on the left
+	# Note: "parcluster('ProfileName')" returns profile setup
+	# Note: Profile name "roarcollab" will be used for tutorial
+
+STEP 2: Run submission script
+	1) Once done, launch MATLAB on text mode and run job script (without .m):
+	($: Linux terminal, >: MATLAB command window)
+	   $ module load matlab
+	   $ matlab -nodisplay -nosplash -r "<Script_Name> ; exit"
+	   Or,
+	   $ module load matlab
+	   $ matlab -nodisplay -nosplash
+	   > run <Script_Name>
+	2) Check if job is on queue ($ squeue -u PSUID)
+
+Alternatively, user can use GUI
+	1) Open MATLAB GUI from Roar Collab Portal, run Job script from MATLAB
+
+STEP 3: Check the result or output
+	Method 1 (Save output to text file):
+	"diary(JobName, 'OutputFile.txt')" must be on the submission script, all command line output will be stored in OutputFile.txt.
+	# Note: load(JobName) should not be used
+	
+	Method 2 (Check output via GUI):
+	Use Interactive desktop/app to open MATLAB GUI.
+	Right click a job from Job Monitor and press "Show Diary"
+
+
+########## Sample submission command ##########
+$ module load matlab
+$ matlab -nodisplay -nosplash -r cluster_test
+
+Requested resource can be easily changed but last number on the following line must be smaller than total number of processors:
+(One proc will be used to submit and control job)
+
+jj = batch(Cluster, 'testpar','pool',19);
+
+(i.e. 19 if 20 processors are requested)
+
+
+

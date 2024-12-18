@@ -1,0 +1,9 @@
+Download FSL:
+centos 6/7:
+https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py
+https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/Linux
+https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/ShellSetup
+
+source code:
+https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.1-sources.tar.gz
+https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FslInstallation/SourceCode

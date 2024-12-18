@@ -1,0 +1,9 @@
+#PBS -A open
+#PBS -l nodes=2:ppn=20
+#PBS -l walltime=10:00
+
+module load matlab
+
+cd $PBS_O_WORKDIR
+
+matlab -nodisplay -nosplash -r testcode

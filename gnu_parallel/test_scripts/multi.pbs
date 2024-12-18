@@ -1,0 +1,14 @@
+#PBS -A open
+#PBS -l nodes=2:ppn=20
+#PBS -l walltime=5:00
+
+cd $PBS_O_WORKDIR
+
+module load gcc
+module load parallel
+
+# Run 40 parallel jobs in 2 nodes:
+# Note: delay is set to 1 second to avoid too many simultaneous logins
+parallel --sshloginfile $PBS_NODEFILE --delay 1 -j 40 --wd $PBS_O_WORKDIR --joblog $PBS_O_WORKDIR/multi.log "./test.sh" ::: {1..40}
+
+
